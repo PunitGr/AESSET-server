@@ -1,0 +1,104 @@
+body {
+    background: url(../img/bg-form.jpg) no-repeat center center fixed;
+    background-size: cover;
+    max-width: 100%;
+    width: 100%;
+    font-size: 20px;
+    font-family: 'Open Sans', sans-serif;
+    position: fixed;
+ }
+
+html, body{
+    margin: 0px;
+    padding: 0px;
+    /*height: 678px;*/
+    overflow-x: hidden; 
+}
+
+.wrapper{
+    padding: 12% 0 20% 30%;
+    position: relative;
+    height: 678px;
+    background: rgba(0,0,0, 0.4);
+}
+
+.container{
+    padding: 5px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.login{
+    height: ;
+    padding: 40px;
+    /*background-color: rgba(255, 255, 255, 0.6);*/
+    border-radius: 2px;
+    background-image: url(../img/form5.jpg);
+    /*box-shadow: 10px 10px 50px #BDBDBD;*/
+}
+
+.input-wrapper{
+    width: 100%;
+    max-width: 420px;
+    padding: 7px 10px 5px;
+    background-color: #fff;
+    border: 1px solid #d2d2d2;
+    font-size: 12px;
+    font-weight: 300;
+    overflow: hidden;
+}
+
+.no-btn{
+    border-top: 0px;
+}
+
+label{
+    color: #bbb;
+    width: 100%;
+    text-align: left;
+    display: block;
+}
+
+.input-wrapper input{
+    letter-spacing: 0.2em;
+    border: 0px;
+    outline: none;
+    text-align: left;
+    font-weight: normal;    
+}
+
+select {
+    text-align: center;
+    border: 0px;
+    background-color: red;
+    width: 100%;
+    max-width: 442px;
+    padding: 14px;
+    color: #fff;
+    margin-top: 2px;
+}
+
+select>option{
+    padding: 14px;
+    -webkit-transition: 0.07s ease;
+    transition: 0.07s ease;
+}
+
+button{
+    text-align: center;
+    color: #fff;
+    border: 0px;
+    background-color: blue;
+    width: 100%;
+    max-width: 442px;
+    padding: 14px;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.dropdown__query {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 300;
+}
