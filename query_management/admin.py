@@ -24,9 +24,9 @@ class QueryAdmin(admin.ModelAdmin):
 
 # Token Admin for displaying Token table in Django Admin
 class TokenAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'token', 'slot_id')
-    list_filter = ('student_id', 'token', 'slot_id')
-    search_fields = ('token', 'student_id', 'slot_id')
+    list_display = ('student_id', 'token_id', 'slot_id')
+    list_filter = ('student_id', 'token_id', 'slot_id')
+    search_fields = ('token_id', 'student_id', 'slot_id')
 
 
 # TimeSlot Admin for displaying Timeslot table in Django Admin

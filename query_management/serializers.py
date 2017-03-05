@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Query, TimeSlot
+from .models import Query, TimeSlot, Token
 
 """
 Serializers renders the model instances into the JSON format
@@ -32,4 +32,10 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = TimeSlot
+        fields = ('__all__')
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Token
         fields = ('__all__')

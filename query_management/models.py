@@ -32,9 +32,9 @@ class Query(models.Model):
 
 # Token database table
 class Token(models.Model):
-    slot = models.OneToOneField(TimeSlot)
+    slot = models.ForeignKey(TimeSlot)
     student_id = models.OneToOneField(Query)
-    token = models.IntegerField(blank=False)
+    token_id = models.CharField(blank=False, max_length=24)
 
     def __str__(self):
-        return str(self.token)
+        return str(self.token_id)

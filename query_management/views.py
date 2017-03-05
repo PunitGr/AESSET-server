@@ -1,10 +1,9 @@
-from datetime import datetime
+import datetime
 from datetime import timedelta
 
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import send_mail
-from django.db.models import F
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -14,7 +13,17 @@ from rest_framework.response import Response
 
 from seating_manager.models import Student
 from .models import TimeSlot, Token, Query
-from .serializers import QuerySerializer
+from .serializers import QuerySerializer, TokenSerializer
+
+string = "SU17"
+
+
+def counted(f):
+    def wrapped(*args, **kwargs):
+        wrapped.calls += 1
+        return f(*args, **kwargs)
+    wrapped.calls = 0
+    return wrapped
 
 
 @api_view(['POST'])
@@ -36,7 +45,7 @@ def RequestQuery(request):
                 pass
             if exists:
                 query_obj = serializer.save()
-                SendEmail(query_obj.email)
+                GenerateTimeSlotToken(query_obj.student, query_obj.email)
                 return HttpResponse("Email has been sent")
             else:
                 response_data = 'User with this email id does not exist'
@@ -71,7 +80,7 @@ def SendEmail(email):
 
 # Function to create a time slot
 def UpdateTimeSlotValue():
-    now = datetime.now()
+    now = datetime.datetime.now()
     if (now.hour > 13 and now.minute > 45):
         # Date
         dd = now.date + 1
@@ -84,19 +93,24 @@ def UpdateTimeSlotValue():
 
 
 # Function to generate a token
-def GenerateTimeSlotToken(query):
-    now = datetime.now()
-    hour = now.hour
-    minute = now.minute
-    time = datetime.time(hour, minute)
-    slot = TimeSlot.objects.filter()
-    try:
-        if TimeSlot.objects.filter(count < 5):
-            slot = TimeSlot.objects.filter(count < 5)
-            token = Token.objects.create(slot_id=slot,
-                                         student_id=query,
-                                         token=F('token') + 1)
-            token.save()
-            print(slot)
-    except:
-        pass
+@counted
+def GenerateTimeSlotToken(id, email):
+    # now = datetime.datetime.now()
+    # hour = now.hour
+    # minute = now.minute
+    # time = datetime.time(hour, minute)
+    slot = TimeSlot.objects.filter(count__lt=5)
+
+    if slot.exists():
+        slot = slot[0]
+        print (slot, id)
+        token_no = GenerateTimeSlotToken.calls
+        token = string + str(token_no)
+        serializer = TokenSerializer(data={"slot": slot, "student_id": id, "token_id": token})
+        print(serializer)
+        if serializer.is_valid():
+            print("valid")
+            serializer.save()
+            SendEmail(email)
+        else:
+            print(serializer.errors)
