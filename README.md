@@ -60,10 +60,7 @@ Once we have Django app and Postgresql installed it's now time to create the sch
 #### Note
 Whenever you install add a package using pip don't forget to update requirements.txt. Update requirements by typing pip freeze>requirements.txt
 
+#### Documentation
 
-#### Contributers
-Isha : [IshaTr](https://github.com/ishatr) | isha212195@gmail.com | 130101081
-
-Punit Grover: [PunitGr](https://github.com/punitgr) | groove679@gmail.com | 130101126
-
-Neha Siwach: [NehaSiwach](https://github.com/nehasiwach) | siwach_neha@yahoo.com | 130101111
+* **[Seating Manager](https://github.com/PunitGr/AESSET-server/blob/master/docs/seatingmanager.md)**
+* **[Query Manager](https://github.com/PunitGr/AESSET-server/blob/master/docs/querymanager.md)**
