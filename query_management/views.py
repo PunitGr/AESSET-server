@@ -40,7 +40,6 @@ def RequestQuery(request):
             except Student.DoesNotExist:
                 pass
             if exists:
-                print("function before call")
                 serializer.validated_data['slot'] = CreateSlot(
                     serializer.validated_data['date'],
                     serializer.validated_data['time']
@@ -77,15 +76,13 @@ def SendEmail(email):
 
 def CreateSlot(date, time):
     slug = slugify(time) + "-" + slugify(date)
-    check_slot = TimeSlot.objects.get(slot_id=slug)
-    if check_slot:
-        check_slot.count = F('count') + 1
-        check_slot.save()
-        return check_slot
+    if TimeSlot.objects.filter(slot_id=slug).exists():
+        slot = TimeSlot.objects.get(slot_id=slug)
+        slot.count = F('count') + 1
+        slot.save()
+        return slot
     else:
         serializer = TimeSlotSerializer(data={"slot_id": slug, "count": 1})
-        print (serializer)
         if serializer.is_valid():
             obj = serializer.save()
-            print ("done")
             return obj
