@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from seating_manager.models import Student
-from .models import TimeSlot
+from .models import TimeSlot, QueryToken
 from .serializers import QuerySerializer, TimeSlotSerializer
 
 timeslot = {
@@ -86,3 +86,22 @@ def CreateSlot(date, time):
         if serializer.is_valid():
             obj = serializer.save()
             return obj
+
+
+@api_view(['GET'])
+def QueryList(request):
+    status = request.GET.get('status')
+    date = request.GET.get('date')
+    if date and status:
+        querytoken = QueryToken.objects.filter(status=status, date=date)
+        serializer = QuerySerializer(querytoken, many=True)
+    elif status:
+        querytoken = QueryToken.objects.filter(status=status)
+        serializer = QuerySerializer(querytoken, many=True)
+    elif date:
+        querytoken = QueryToken.objects.filter(date=date)
+        serializer = QuerySerializer(querytoken, many=True)
+    else:
+        querytoken = QueryToken.objects.all()
+        serializer = QuerySerializer(querytoken, many=True)
+    return Response(serializer.data)

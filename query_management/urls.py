@@ -8,4 +8,5 @@ which runs when a request routes the URL to view.
 """
 urlpatterns = [
     url(r'^query/$', views.RequestQuery),
+    url(r'^querylist/$', views.QueryList),
 ]
