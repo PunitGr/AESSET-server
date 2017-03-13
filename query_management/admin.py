@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Query, Token, TimeSlot
+from .models import QueryToken, TimeSlot
 
 """
 Django Admin reads metadata from the models to provide a quick,
@@ -12,30 +12,19 @@ entire front end around.
 
 # Query Admin for displaying Query table in Django Admin
 class QueryAdmin(admin.ModelAdmin):
-    list_display = ('student', 'query_type',
-                    'created_at', 'modified_at', 'email',
-                    'phone')
+    list_display = ('student', 'query_type', 'email',
+                    'phone', 'token_id')
     list_filter = ('query_type', 'student', 'email',
-                   'phone')
+                   'phone', 'token_id')
     search_fields = ('query_type', 'student', 'email',
-                     'phone')
-    ordering = ('created_at',)
-
-
-# Token Admin for displaying Token table in Django Admin
-class TokenAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'token_id', 'slot_id')
-    list_filter = ('student_id', 'token_id', 'slot_id')
-    search_fields = ('token_id', 'student_id', 'slot_id')
+                     'phone', 'token_id')
+    ordering = ('token_id',)
 
 
 # TimeSlot Admin for displaying Timeslot table in Django Admin
 class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('slot_id', 'date', 'start', 'finish')
-    list_filter = ('date', 'slot_id')
-    search_fields = ('date', 'slot_id')
+    list_display = ('slot_id', 'count')
 
 
-admin.site.register(Query, QueryAdmin)
-admin.site.register(Token, TokenAdmin)
+admin.site.register(QueryToken, QueryAdmin)
 admin.site.register(TimeSlot, TimeSlotAdmin)

@@ -1,29 +1,25 @@
-import datetime
-from datetime import timedelta
-
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.core.mail import send_mail
+from django.db.models import F
+from django.utils.text import slugify
 
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from seating_manager.models import Student
-from .models import TimeSlot, Token, Query
-from .serializers import QuerySerializer, TokenSerializer
+from .models import TimeSlot
+from .serializers import QuerySerializer, TimeSlotSerializer
 
-string = "SU17"
-
-
-def counted(f):
-    def wrapped(*args, **kwargs):
-        wrapped.calls += 1
-        return f(*args, **kwargs)
-    wrapped.calls = 0
-    return wrapped
+timeslot = {
+    'A1': '9:30-10:00',
+    'B1': '10:01-10:30',
+    'C1': '10:31-11:00',
+    'D1': '11:01-11:30',
+    'F1': '11:31-12:00',
+    'G1': '12:01-12:30',
+    'H1': '1:30-2:00',
+    'I1': '2:00-2:30'
+}
 
 
 @api_view(['POST'])
@@ -44,9 +40,20 @@ def RequestQuery(request):
             except Student.DoesNotExist:
                 pass
             if exists:
+                print("function before call")
+                serializer.validated_data['slot'] = CreateSlot(
+                    serializer.validated_data['date'],
+                    serializer.validated_data['time']
+                )
                 query_obj = serializer.save()
-                GenerateTimeSlotToken(query_obj.student, query_obj.email)
-                return HttpResponse("Email has been sent")
+                SendEmail(query_obj.email)
+                return Response(
+                    {
+                        'status': 'success',
+                        'data': serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
             else:
                 response_data = 'User with this email id does not exist'
                 return Response(
@@ -68,49 +75,17 @@ def SendEmail(email):
     send_mail("hello", message, "hey@sharda.ac.in", [email])
 
 
-# class RequestQueryView(APIView):
-#     renderer_classes = [TemplateHTMLRenderer]
-#     template_name = 'index.html'
-
-#     def post(self, request):
-#         serializer = QuerySerializer(data=request.data)
-#         if serializer.is_valid():
-#             query_obj = serializer.save()
-
-
-# Function to create a time slot
-def UpdateTimeSlotValue():
-    now = datetime.datetime.now()
-    if (now.hour > 13 and now.minute > 45):
-        # Date
-        dd = now.date + 1
-        # Year
-        yy = now.year
-        # Month
-        mm = now.month
-        date = datetime.date(yy, mm, dd)
-        TimeSlot.objects.all().update(date=date, count=0)
-
-
-# Function to generate a token
-@counted
-def GenerateTimeSlotToken(id, email):
-    # now = datetime.datetime.now()
-    # hour = now.hour
-    # minute = now.minute
-    # time = datetime.time(hour, minute)
-    slot = TimeSlot.objects.filter(count__lt=5)
-
-    if slot.exists():
-        slot = slot[0]
-        print (slot, id)
-        token_no = GenerateTimeSlotToken.calls
-        token = string + str(token_no)
-        serializer = TokenSerializer(data={"slot": slot, "student_id": id, "token_id": token})
-        print(serializer)
+def CreateSlot(date, time):
+    slug = slugify(time) + "-" + slugify(date)
+    check_slot = TimeSlot.objects.get(slot_id=slug)
+    if check_slot:
+        check_slot.count = F('count') + 1
+        check_slot.save()
+        return check_slot
+    else:
+        serializer = TimeSlotSerializer(data={"slot_id": slug, "count": 1})
+        print (serializer)
         if serializer.is_valid():
-            print("valid")
-            serializer.save()
-            SendEmail(email)
-        else:
-            print(serializer.errors)
+            obj = serializer.save()
+            print ("done")
+            return obj
