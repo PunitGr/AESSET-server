@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from django.db import models
-from django.utils import timezone
 
 from phonenumber_field.modelfields import PhoneNumberField
+
+now = datetime.now()
 
 query_choices = (
     ('Result', 'Result Discrepency'),
@@ -28,8 +31,8 @@ class QueryToken(models.Model):
     phone = PhoneNumberField(db_index=True)
     department = models.CharField(max_length=8, blank=True)
     year = models.CharField(max_length=2, blank=True)
-    date = models.DateField(auto_now_add=True, blank=False)
-    time = models.TimeField(auto_now_add=True, blank=False)
+    date = models.DateField(default=now.date(), blank=False)
+    time = models.TimeField(default=now.time(), blank=False)
     status = models.CharField(max_length=24, choices=status_choices,
                               default='unresolved')
     token_id = models.CharField(default='', blank=True, null=True,
