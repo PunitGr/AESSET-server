@@ -1,15 +1,14 @@
 from django.core.mail import send_mail
-from django.db.models import F
-from django.utils.text import slugify
 
 from rest_framework import status
-from rest_framework.decorators import api_view
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from seating_manager.models import Student
 from .models import QueryToken
 from .serializers import QuerySerializer
+
 timeslot = {
     'A1': '9:30-10:00',
     'B1': '10:01-10:30',
@@ -107,20 +106,20 @@ def SendEmail(email):
     send_mail("hello", message, "hey@sharda.ac.in", [email])
 
 
-@api_view(['GET'])
-def QueryList(request):
-    status = request.GET.get('status')
-    date = request.GET.get('date')
-    if date and status:
-        querytoken = QueryToken.objects.filter(status=status, date=date)
-        serializer = QuerySerializer(querytoken, many=True)
-    elif status:
-        querytoken = QueryToken.objects.filter(status=status)
-        serializer = QuerySerializer(querytoken, many=True)
-    elif date:
-        querytoken = QueryToken.objects.filter(date=date)
-        serializer = QuerySerializer(querytoken, many=True)
-    else:
-        querytoken = QueryToken.objects.all()
-        serializer = QuerySerializer(querytoken, many=True)
-    return Response(serializer.data)
+class QueryList(APIView):
+    def get(self, request):
+        status = request.GET.get('status')
+        date = request.GET.get('date')
+        if date and status:
+            querytoken = QueryToken.objects.filter(status=status, date=date)
+            serializer = QuerySerializer(querytoken, many=True)
+        elif status:
+            querytoken = QueryToken.objects.filter(status=status)
+            serializer = QuerySerializer(querytoken, many=True)
+        elif date:
+            querytoken = QueryToken.objects.filter(date=date)
+            serializer = QuerySerializer(querytoken, many=True)
+        else:
+            querytoken = QueryToken.objects.all()
+            serializer = QuerySerializer(querytoken, many=True)
+        return Response(serializer.data)

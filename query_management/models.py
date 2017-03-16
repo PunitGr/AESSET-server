@@ -10,6 +10,14 @@ query_choices = (
     ('Other Certificate', 'Issue of some other certificate')
 )
 
+status_choices = (
+    ('resolved', 'Resolved'),
+    ('unresolved', 'Unresolved'),
+    ('pending', 'Pending'),
+    ('reschedule', 'Reschedule'),
+    ('transfer', 'Transfered to other department')
+)
+
 
 # Query database table
 class QueryToken(models.Model):
@@ -22,7 +30,8 @@ class QueryToken(models.Model):
     year = models.CharField(max_length=2, blank=True)
     date = models.DateField(auto_now_add=True, blank=False)
     time = models.TimeField(auto_now_add=True, blank=False)
-    status = models.BooleanField(default=False)
+    status = models.CharField(max_length=24, choices=status_choices,
+                              default='unresolved')
     token_id = models.CharField(default='', blank=True, null=True,
                                 max_length=24)
     description = models.CharField(default='', blank=True, max_length=240)
