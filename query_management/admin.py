@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import QueryToken, TimeSlot
+from .models import QueryToken
 
 """
 Django Admin reads metadata from the models to provide a quick,
@@ -21,10 +21,4 @@ class QueryAdmin(admin.ModelAdmin):
     ordering = ('token_id',)
 
 
-# TimeSlot Admin for displaying Timeslot table in Django Admin
-class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('slot_id', 'count')
-
-
 admin.site.register(QueryToken, QueryAdmin)
-admin.site.register(TimeSlot, TimeSlotAdmin)

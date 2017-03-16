@@ -4,12 +4,12 @@ from django.utils.text import slugify
 
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from seating_manager.models import Student
-from .models import TimeSlot, QueryToken
-from .serializers import QuerySerializer, TimeSlotSerializer
-
+from .models import QueryToken
+from .serializers import QuerySerializer
 timeslot = {
     'A1': '9:30-10:00',
     'B1': '10:01-10:30',
@@ -22,48 +22,81 @@ timeslot = {
 }
 
 
-@api_view(['POST'])
-def RequestQuery(request):
-    """
-    Handles the POST request which helps a user to send a
-    query to the server which first checks that if the student is
-    exists in the Database. If the student exists it provides him with the
-    timeslot and a token for query handling.
-    """
-    if request.method == 'POST':
-        serializer = QuerySerializer(data=request.data)
-        exists = False
+class UpdateQueryView(APIView):
+    def get_object(self, token_id):
+        try:
+            token = QueryToken.objects.get(token_id=token_id)
+        except QueryToken.DoesNotExist:
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Token not found",
+                    "results": ""
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return token
+
+    def patch(self, request, token_id):
+        data = request.data
+        query = self.get_object(token_id)
+        serializer = QuerySerializer(query, data=data, partial=True)
         if serializer.is_valid():
-            try:
+            serializer.save()
+            return Response(
+                {
+                    'status': 'success',
+                    'data': serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {
+                "status": "failed",
+                "error": serializer.errors,
+                "results": ""
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class RequestQuery(APIView):
+    def post(self, request):
+        """
+        Handles the POST request which helps a user to send a
+        query to the server which first checks that if the student is
+        exists in the Database. If the student exists it provides him with the
+        timeslot and a token for query handling.
+        """
+        if request.method == 'POST':
+            serializer = QuerySerializer(data=request.data)
+            if serializer.is_valid():
                 if Student.objects.get(system_id=serializer.validated_data['student']):
-                    exists = True
-            except Student.DoesNotExist:
-                pass
-            if exists:
-                serializer.validated_data['slot'] = CreateSlot(
-                    serializer.validated_data['date'],
-                    serializer.validated_data['time']
-                )
-                query_obj = serializer.save()
-                SendEmail(query_obj.email)
-                return Response(
-                    {
-                        'status': 'success',
-                        'data': serializer.data
-                    },
-                    status=status.HTTP_201_CREATED
-                )
+                    obj = Student.objects.get(
+                        system_id=serializer.validated_data['student']
+                    )
+                    serializer.validated_data['department'] = obj.branch
+                    serializer.validated_data['year'] = obj.year
+                    query_obj = serializer.save()
+                    SendEmail(query_obj.email)
+                    return Response(
+                        {
+                            'status': 'success',
+                            'data': serializer.data
+                        },
+                        status=status.HTTP_201_CREATED
+                    )
+                else:
+                    response_data = 'User with this email id does not exist'
+                    return Response(
+                        {
+                            'status': 'failed',
+                            'data': response_data
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
-                response_data = 'User with this email id does not exist'
-                return Response(
-                    {
-                        'status': 'failed',
-                        'data': response_data
-                    },
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        else:
-            return Response(serializer.errors)
+                return Response(serializer.errors)
 
 
 # Function to send an email to the specified email id
@@ -72,20 +105,6 @@ def RequestQuery(request):
 def SendEmail(email):
     message = ("Hello there")
     send_mail("hello", message, "hey@sharda.ac.in", [email])
-
-
-def CreateSlot(date, time):
-    slug = slugify(time) + "-" + slugify(date)
-    if TimeSlot.objects.filter(slot_id=slug).exists():
-        slot = TimeSlot.objects.get(slot_id=slug)
-        slot.count = F('count') + 1
-        slot.save()
-        return slot
-    else:
-        serializer = TimeSlotSerializer(data={"slot_id": slug, "count": 1})
-        if serializer.is_valid():
-            obj = serializer.save()
-            return obj
 
 
 @api_view(['GET'])

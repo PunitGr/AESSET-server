@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from query_management import views
+from .views import *
 
 """
 Handles URL.
@@ -7,6 +7,8 @@ Views are mapped to a specific URL,
 which runs when a request routes the URL to view.
 """
 urlpatterns = [
-    url(r'^query/$', views.RequestQuery),
-    url(r'^querylist/$', views.QueryList),
+    url(r'^query/$', RequestQuery.as_view()),
+    url(r'^querylist/$', QueryList),
+    url(r'^queryupdate/(?P<token_id>[a-zA-Z0-9]+)/$',
+        UpdateQueryView.as_view())
 ]

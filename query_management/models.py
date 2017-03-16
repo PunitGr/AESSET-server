@@ -1,32 +1,36 @@
 from django.db import models
+from django.utils import timezone
+
 from phonenumber_field.modelfields import PhoneNumberField
 
-
-# TImeSlot database table
-class TimeSlot(models.Model):
-    slot_id = models.CharField(max_length=24, primary_key=True)
-    count = models.IntegerField()
-
-    def __str__(self):
-        return str(self.slot_id)
+query_choices = (
+    ('Result', 'Result Discrepency'),
+    ('Credit', 'Credit Discrepency'),
+    ('PDC Issue', 'Issue of PDC'),
+    ('Other Certificate', 'Issue of some other certificate')
+)
 
 
 # Query database table
 class QueryToken(models.Model):
     student = models.IntegerField(blank=False)
-    query_type = models.CharField(max_length=240, default='Exam')
+    query_type = models.CharField(max_length=240, choices=query_choices,
+                                  db_index=True, blank=False)
     email = models.CharField(max_length=48, db_index=True)
     phone = PhoneNumberField(db_index=True)
-    date = models.DateField(blank=False)
-    time = models.CharField(max_length=12, blank=False)
+    department = models.CharField(max_length=8, blank=True)
+    year = models.CharField(max_length=2, blank=True)
+    date = models.DateField(auto_now_add=True, blank=False)
+    time = models.TimeField(auto_now_add=True, blank=False)
     status = models.BooleanField(default=False)
     token_id = models.CharField(default='', blank=True, null=True,
                                 max_length=24)
-    slot = models.ForeignKey(TimeSlot, blank=True, null=True)
+    description = models.CharField(default='', blank=True, max_length=240)
 
     def save(self, *args, **kwargs):
         if self.token_id == '':
-            token_objects = QueryToken.objects.values_list('token_id').order_by('-id')
+            token_objects = QueryToken.objects.values_list(
+                'token_id').order_by('-id')
             if token_objects.exists():
                 token_object = token_objects[0]
                 token = token_object[0]
