@@ -7,10 +7,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 now = datetime.now()
 
 query_choices = (
-    ('Result', 'Result Discrepency'),
-    ('Credit', 'Credit Discrepency'),
-    ('PDC Issue', 'Issue of PDC'),
-    ('Other Certificate', 'Issue of some other certificate')
+    ('result', 'Result Discrepency'),
+    ('credit', 'Credit Discrepency'),
+    ('pdc_issue', 'Issue of PDC'),
+    ('other_certificate', 'Issue of some other certificate')
 )
 
 status_choices = (
@@ -25,8 +25,8 @@ status_choices = (
 # Query database table
 class QueryToken(models.Model):
     student = models.IntegerField(blank=False)
-    query_type = models.CharField(max_length=240, choices=query_choices,
-                                  db_index=True, blank=False)
+    query_type = models.CharField(max_length=64, choices=query_choices,
+                                  blank=False)
     email = models.CharField(max_length=48, db_index=True)
     phone = PhoneNumberField(db_index=True)
     department = models.CharField(max_length=8, blank=True)
@@ -54,6 +54,9 @@ class QueryToken(models.Model):
 
     def __str__(self):
         return str(self.token_id)
+
+    def query_type_value(self):
+        return self.get_query_type_display()
 
     class Meta:
         verbose_name_plural = 'Queries'
