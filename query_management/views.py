@@ -9,17 +9,6 @@ from seating_manager.models import Student
 from .models import QueryToken
 from .serializers import QuerySerializer
 
-timeslot = {
-    'A1': '9:30-10:00',
-    'B1': '10:01-10:30',
-    'C1': '10:31-11:00',
-    'D1': '11:01-11:30',
-    'F1': '11:31-12:00',
-    'G1': '12:01-12:30',
-    'H1': '1:30-2:00',
-    'I1': '2:00-2:30'
-}
-
 
 class UpdateQueryView(APIView):
     def get_object(self, token_id):

@@ -14,8 +14,7 @@ entire front end around.
 class QueryAdmin(admin.ModelAdmin):
     list_display = ('student', 'query_type', 'email',
                     'phone', 'token_id')
-    list_filter = ('query_type', 'student', 'email',
-                   'phone', 'token_id')
+    list_filter = ('query_type', 'department', 'status')
     search_fields = ('query_type', 'student', 'email',
                      'phone', 'token_id')
     ordering = ('token_id',)
