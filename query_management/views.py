@@ -121,40 +121,40 @@ class QueryList(APIView):
             serializer = QuerySerializer(querytoken, many=True)
 
         elif date and status and query_type and department and year:
-            querytoken = QueryToken.objects.all(status=status,
-                                                date=date,
-                                                query_type=query_type,
-                                                department=department,
-                                                year=year)
+            querytoken = QueryToken.objects.filter(status=status,
+                                                   date=date,
+                                                   query_type=query_type,
+                                                   department=department,
+                                                   year=year)
             serializer = QuerySerializer(querytoken, many=True)
 
         elif date and status and department and year:
-            querytoken = QueryToken.objects.all(status=status,
-                                                date=date,
-                                                department=department,
-                                                year=year)
+            querytoken = QueryToken.objects.filter(status=status,
+                                                   date=date,
+                                                   department=department,
+                                                   year=year)
             serializer = QuerySerializer(querytoken, many=True)
 
         elif date and department and year:
-            querytoken = QueryToken.objects.all(status=status,
-                                                date=date,
-                                                department=department,
-                                                year=year)
+            querytoken = QueryToken.objects.filter(status=status,
+                                                   date=date,
+                                                   department=department,
+                                                   year=year)
             serializer = QuerySerializer(querytoken, many=True)
 
         elif date and status and department:
-            querytoken = QueryToken.objects.all(status=status,
-                                                date=date,
-                                                department=department,
-                                                )
+            querytoken = QueryToken.objects.filter(status=status,
+                                                   date=date,
+                                                   department=department,
+                                                   )
             serializer = QuerySerializer(querytoken, many=True)
 
         elif date and department:
-            querytoken = QueryToken.objects.all(department=department)
+            querytoken = QueryToken.objects.filter(department=department)
             serializer = QuerySerializer(querytoken, many=True)
 
         else:
-            querytoken = QueryToken.objects.all(date=date)
+            querytoken = QueryToken.objects.filter(date=date)
             serializer = QuerySerializer(querytoken, many=True)
 
         return Response(serializer.data)
