@@ -154,7 +154,7 @@ class QueryList(APIView):
             serializer = QuerySerializer(querytoken, many=True)
 
         else:
-            querytoken = QueryToken.objects.filter(date=date)
+            querytoken = QueryToken.objects.all()
             serializer = QuerySerializer(querytoken, many=True)
 
         return Response(serializer.data)
