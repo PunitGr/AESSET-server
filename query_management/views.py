@@ -97,64 +97,29 @@ def SendEmail(email):
 
 class QueryList(APIView):
     def get(self, request):
+        kwargs = {}
         status = request.GET.get('status')
         date = request.GET.get('date')
         query_type = request.GET.get('query_type')
         department = request.GET.get('department')
         year = request.GET.get('year')
 
-        if date and status:
-            querytoken = QueryToken.objects.filter(status=status, date=date)
-            serializer = QuerySerializer(querytoken, many=True)
+        if status is not None:
+            kwargs['status'] = str(status)
 
-        elif date and status and query_type:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   query_type=query_type)
-            serializer = QuerySerializer(querytoken, many=True)
+        if date is not None:
+            kwargs['date'] = str(date)
 
-        elif date and status and query_type and department:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   query_type=query_type,
-                                                   department=department)
-            serializer = QuerySerializer(querytoken, many=True)
+        if query_type is not None:
+            kwargs['query_type'] = str(query_type)
 
-        elif date and status and query_type and department and year:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   query_type=query_type,
-                                                   department=department,
-                                                   year=year)
-            serializer = QuerySerializer(querytoken, many=True)
+        if department is not None:
+            kwargs['department'] = str(department)
 
-        elif date and status and department and year:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   department=department,
-                                                   year=year)
-            serializer = QuerySerializer(querytoken, many=True)
+        if year is not None:
+            kwargs['year'] = str(year)
 
-        elif date and department and year:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   department=department,
-                                                   year=year)
-            serializer = QuerySerializer(querytoken, many=True)
-
-        elif date and status and department:
-            querytoken = QueryToken.objects.filter(status=status,
-                                                   date=date,
-                                                   department=department,
-                                                   )
-            serializer = QuerySerializer(querytoken, many=True)
-
-        elif date and department:
-            querytoken = QueryToken.objects.filter(department=department)
-            serializer = QuerySerializer(querytoken, many=True)
-
-        else:
-            querytoken = QueryToken.objects.all()
-            serializer = QuerySerializer(querytoken, many=True)
+        querytoken = QueryToken.objects.filter(**kwargs)
+        serializer = QuerySerializer(querytoken, many=True)
 
         return Response(serializer.data)
