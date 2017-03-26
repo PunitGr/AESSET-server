@@ -11,10 +11,17 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import djcelery
+djcelery.setup_loader()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BROKER_URL = 'redis://localhost:6379/0'
+BROKER_TRANSPORT = 'redis'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_ALWAYS_EAGER = False
+CELERY_ACCEPT_CONTENT = ['pickle']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -41,10 +48,11 @@ INSTALLED_APPS = [
     # installed packages
     'rest_framework',
     'phonenumber_field',
+    'djcelery',
 
     # user-defined apps
-    'seating_manager.apps.SeatingManagerConfig',
-    'query_management.apps.QueryManagementConfig',
+    'seating_manager',
+    'query_management',
 ]
 
 REST_FRAMEWORK = {

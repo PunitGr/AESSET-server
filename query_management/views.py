@@ -1,5 +1,3 @@
-from django.core.mail import send_mail
-
 from rest_framework import status
 
 from rest_framework.views import APIView
@@ -8,6 +6,7 @@ from rest_framework.response import Response
 from seating_manager.models import Student
 from .models import QueryToken
 from .serializers import QuerySerializer
+from .tasks import RequestQueryTask
 
 
 class UpdateQueryView(APIView):
@@ -66,7 +65,7 @@ class RequestQuery(APIView):
                     serializer.validated_data['department'] = obj.branch
                     serializer.validated_data['year'] = obj.year
                     query_obj = serializer.save()
-                    SendEmail(query_obj.email)
+                    RequestQueryTask.delay(query_obj)
                     return Response(
                         {
                             'status': 'success',
@@ -85,14 +84,6 @@ class RequestQuery(APIView):
                     )
             else:
                 return Response(serializer.errors)
-
-
-# Function to send an email to the specified email id
-# To test please run the smtp server
-# python -m smtpd -n -c DebuggingServer localhost:1025
-def SendEmail(email):
-    message = ("Hello there")
-    send_mail("hello", message, "hey@sharda.ac.in", [email])
 
 
 class QueryList(APIView):
