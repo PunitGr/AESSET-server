@@ -22,6 +22,4 @@ class QuerySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = QueryToken
-        fields = ('id', 'student', 'query_type', 'query_type_value', 'email',
-                  'phone', 'department', 'year', 'date', 'time', 'status',
-                  'token_id', 'description')
+        fields = ('__all__')

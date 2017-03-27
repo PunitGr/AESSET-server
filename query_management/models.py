@@ -55,8 +55,5 @@ class QueryToken(models.Model):
     def __str__(self):
         return str(self.token_id)
 
-    def query_type_value(self):
-        return self.get_query_type_display()
-
     class Meta:
         verbose_name_plural = 'Queries'

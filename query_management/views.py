@@ -94,6 +94,7 @@ class QueryList(APIView):
         query_type = request.GET.get('query_type')
         department = request.GET.get('department')
         year = request.GET.get('year')
+        token_id = request.GET.get('token_id')
 
         if status is not None:
             kwargs['status'] = str(status)
@@ -109,6 +110,9 @@ class QueryList(APIView):
 
         if year is not None:
             kwargs['year'] = str(year)
+
+        if token_id is not None:
+            kwargs['token_id'] = token_id
 
         querytoken = QueryToken.objects.filter(**kwargs)
         serializer = QuerySerializer(querytoken, many=True)
