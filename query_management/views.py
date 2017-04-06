@@ -29,7 +29,8 @@ class UpdateQueryView(APIView):
         query = self.get_object(token_id)
         serializer = QuerySerializer(query, data=data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            query_obj = serializer.save()
+            RequestQueryTask.delay(query_obj)
             return Response(
                 {
                     'status': 'success',
@@ -117,4 +118,12 @@ class QueryList(APIView):
         querytoken = QueryToken.objects.filter(**kwargs)
         serializer = QuerySerializer(querytoken, many=True)
 
+        return Response(serializer.data)
+
+
+class QueryListFrom(APIView):
+    def get(self, request):
+        date = request.GET.get('date')
+        querytoken = QueryToken.objects.filter(date__gte=date)
+        serializer = QuerySerializer(querytoken, many=True)
         return Response(serializer.data)

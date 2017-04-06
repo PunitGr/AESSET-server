@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'phonenumber_field',
     'djcelery',
+    'channels',
 
     # user-defined apps
     'seating_manager',
@@ -80,6 +81,16 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'automation_project.urls'
+
+CHANNEL_LAYER = {
+    "defaults": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+        "ROUTING": "automation_project.routing.channel_routing"
+    }
+}
 
 TEMPLATES = [
     {

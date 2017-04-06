@@ -9,6 +9,7 @@ which runs when a request routes the URL to view.
 urlpatterns = [
     url(r'^query/$', RequestQuery.as_view()),
     url(r'^querylist/$', QueryList.as_view()),
+    url(r'^querylistfrom/$', QueryListFrom.as_view()),
     url(r'^queryupdate/(?P<token_id>[a-zA-Z0-9]+)/$',
         UpdateQueryView.as_view())
 ]
