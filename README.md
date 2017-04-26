@@ -4,7 +4,7 @@ Automation of Examination Cell SET activities
 ### Installing Python Packages
 
 ```
-$ git clone git@github.com:IshaTr/automation.git
+$ git clone git@github.com:PunitGr/AESSET-server.git
 $ cd automation
 
 $ sudo easy_install pip
